@@ -11,17 +11,19 @@ import { User } from 'src/user/entities/user.entity';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskAction } from 'src/reports/enums/task-action.enum';
 import { ReportsService } from 'src/reports/reports.service';
+import { Project } from 'src/projects/entities/project.entity';
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
-    private readonly taskRepository: Repository<Task>,
+    private readonly taskRepository: Repository<Task>, // Task repository
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>, // Project repository
 
-    private readonly userService: UserService, //task service içine user servisi inject
-    private readonly reportsService: ReportsService,
+    private readonly userService: UserService, // user service
+    private readonly reportsService: ReportsService, // reports service
   ) {}
-
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const {
       title,
@@ -31,7 +33,17 @@ export class TaskService {
       dueDate,
       createdBy,
       assignedTo,
+      projectId,
     } = createTaskDto;
+
+    // Project ID'yi kullanarak projeyi buluyoruz
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+    });
+
+    if (!project) {
+      throw new Error('Project not found');
+    }
 
     // createdBy kullanıcı adını UserService ile bul
     const createdByUser = await this.userService.findByName(createdBy);
@@ -56,6 +68,7 @@ export class TaskService {
       dueDate: new Date(dueDate), //tarihi tarih objesi olarka kaydetti
       createdBy: createdByUser,
       assignedTo: assignedToUser,
+      project,
     });
 
     const createdTask = await this.taskRepository.save(task);

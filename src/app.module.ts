@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
 import { ActivityLog } from './reports/entities/activitiy-log.entity';
 import { ProjectsModule } from './projects/projects.module';
+import { Project } from './projects/entities/project.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ProjectsModule } from './projects/projects.module';
       username: 'postgres', // kendi kullanıcı adını gir
       password: '2003', // kendi şifreni gir
       database: 'postgres', // veritabanı adını gir
-      entities: [Task, User, ActivityLog], //projemde kullandığım tüm entityleri buraya giriyorum
+      entities: [Task, User, ActivityLog, Project], //projemde kullandığım tüm entityleri buraya giriyorum
       synchronize: true, // development aşamasında true olabilir
     }),
     TasksModule,
