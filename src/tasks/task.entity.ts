@@ -10,6 +10,7 @@ import {
 import { TaskStatus } from './enums/task-status.enum';
 import { TaskPriority } from './enums/task-priority.enum';
 import { User } from 'src/user/entities/user.entity';
+import { Project } from 'src/projects/entities/project.entity';
 
 @Entity()
 export class Task {
@@ -61,4 +62,10 @@ export class Task {
   })
   @JoinColumn({ name: 'assignedToUserId' })
   assignedTo: User;
+
+  @ManyToOne(() => Project, (project) => project.tasks) // Task ile Project arasında ManyToOne ilişkisi
+  project: Project;
+
+  @Column()
+  projectId: number; // Proje ID'si
 }
