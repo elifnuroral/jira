@@ -9,6 +9,7 @@ import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
 import { ActivityLog } from './reports/entities/activitiy-log.entity';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ActivityLog } from './reports/entities/activitiy-log.entity';
     UserModule,
     AuthModule,
     ReportsModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
