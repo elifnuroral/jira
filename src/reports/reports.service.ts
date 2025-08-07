@@ -16,6 +16,7 @@ export class ReportsService {
     userId: number,
     action: TaskAction, // Action'ı direkt enum olarak alıyoruz
     taskId: number,
+    projectId?: number, // Proje ID'si opsiyonel
   ): Promise<ActivityLog> {
     //
 
@@ -30,6 +31,7 @@ export class ReportsService {
       userId,
       action: actionEnum, // Enum'a dönüştürdük
       taskId,
+      projectId,
     });
 
     return await this.activityLogRepository.save(log);
