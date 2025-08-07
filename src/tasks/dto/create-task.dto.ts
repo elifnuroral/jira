@@ -36,4 +36,7 @@ export class CreateTaskDto {
   @IsString()
   @IsOptional()
   assignedTo?: string; // Atanan kullanıcının ismi, opsiyonel
+
+  @IsOptional()
+  projectId: number; // Proje ID'si, opsiyonel
 }

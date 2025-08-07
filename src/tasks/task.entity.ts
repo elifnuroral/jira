@@ -64,8 +64,9 @@ export class Task {
   assignedTo: User;
 
   @ManyToOne(() => Project, (project) => project.tasks) // Task ile Project arasında ManyToOne ilişkisi
+  @JoinColumn({ name: 'projectId' })
   project: Project;
 
-  @Column()
+  @Column({ nullable: true })
   projectId: number; // Proje ID'si
 }

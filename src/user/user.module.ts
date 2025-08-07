@@ -9,6 +9,6 @@ import { User } from './entities/user.entity';
   //sadece bu module özel olarak User tablosuyla çalışmamızı sağlar
   controllers: [UserController],
   providers: [UserService], //providerlar bu modül için kullanılacak serviceleri belirtir.
-  exports: [UserService], //başka modülde kullanacaksan
+  exports: [UserService, TypeOrmModule], //başka modülde kullanacaksan
 })
 export class UserModule {}
