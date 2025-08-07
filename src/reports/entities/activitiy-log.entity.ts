@@ -20,6 +20,9 @@ export class ActivityLog {
   @Column()
   taskId: number; // İlgili görev ID'si
 
+  @Column({ nullable: true })
+  projectId: number;
+
   @CreateDateColumn()
   timestamp: Date; // İşlemin yapıldığı tarih ve saat
 }

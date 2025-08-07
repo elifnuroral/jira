@@ -10,4 +10,7 @@ export class CreateLogDto {
 
   @IsInt()
   taskId: number; // Görev ID'si
+
+  @IsInt()
+  projectId: number; // Proje ID'si, opsiyonel olabilir
 }

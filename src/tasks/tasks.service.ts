@@ -78,6 +78,7 @@ export class TaskService {
       createdTask.createdBy.id, // Task'ı oluşturan kullanıcının ID'si
       TaskAction.CREATED, // Action türü (oluşturma işlemi)
       createdTask.id, // Oluşturulan Task ID'si
+      project.id,
     );
 
     return createdTask;
