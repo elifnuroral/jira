@@ -13,8 +13,9 @@ export class ReportsController {
     @Body() createLogDto: CreateLogDto, // DTO'yu alıyoruz
   ): Promise<ActivityLog> {
     // Artık dönüşüm işlemi ReportsService içinde yapılacak
-    return this.reportsService.createActivityLog(
+    return await this.reportsService.createActivityLog(
       createLogDto.userId,
+      createLogDto.role,
       createLogDto.action, // Enum olarak geliyor, dönüşüm burada yapılacak
       createLogDto.taskId,
     );

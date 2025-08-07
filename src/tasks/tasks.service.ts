@@ -76,6 +76,7 @@ export class TaskService {
     // 1. Activity Log kaydını oluştur
     await this.reportsService.createActivityLog(
       createdTask.createdBy.id, // Task'ı oluşturan kullanıcının ID'si
+      createdTask.createdBy.role,
       TaskAction.CREATED, // Action türü (oluşturma işlemi)
       createdTask.id, // Oluşturulan Task ID'si
       project.id,
@@ -114,6 +115,7 @@ export class TaskService {
     // 1. Activity Log kaydını oluştur
     await this.reportsService.createActivityLog(
       taskToDelete.createdBy.id, // Silen kullanıcının ID'si
+      taskToDelete.createdBy.role,
       TaskAction.DELETED, // Action türü (silme işlemi)
       id, // Silinen Task ID'si
     );
@@ -187,6 +189,7 @@ export class TaskService {
     // 7. Activity Log kaydını oluştur
     await this.reportsService.createActivityLog(
       updatedTask.createdBy.id, // Güncelleyen kullanıcı ID'si
+      updatedTask.createdBy.role,
       TaskAction.UPDATE, // Action türü
       updatedTask.id, // Güncellenen Task ID'si
     );
@@ -296,12 +299,14 @@ export class TaskService {
       if (status === TaskStatus.IN_PROGRESS) {
         await this.reportsService.createActivityLog(
           task.createdBy.id, // Task'ı oluşturan kullanıcının ID'si
+          task.createdBy.role,
           TaskAction.IN_PROGRESS, // Durum değişikliği için action türü
           updatedTask.id, // Güncellenen Task ID'si
         );
       } else {
         await this.reportsService.createActivityLog(
           task.createdBy.id, // Task'ı oluşturan kullanıcının ID'si
+          task.createdBy.role,
           TaskAction.STATUS_CHANGED, // Durum değişikliği için genel action türü
           updatedTask.id, // Güncellenen Task ID'si
         );

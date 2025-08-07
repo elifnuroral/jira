@@ -34,6 +34,7 @@ export class UserService {
 
     user.name = data.name;
     user.email = data.email;
+    user.role = data.role || 'user';
 
     // Şifreyi hashle (10 rounds salt kullanarak)
     const hashedPassword = await bcrypt.hash(data.password, 10);

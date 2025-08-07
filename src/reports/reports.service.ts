@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskAction } from './enums/task-action.enum'; // Enum'u import ediyoruz
 import { ActivityLog } from './entities/activitiy-log.entity';
+import { Role } from 'src/user/enums/role.enum';
 
 @Injectable()
 export class ReportsService {
@@ -14,6 +15,7 @@ export class ReportsService {
   // Yeni bir activity log kaydı oluşturur
   async createActivityLog(
     userId: number,
+    role: Role,
     action: TaskAction, // Action'ı direkt enum olarak alıyoruz
     taskId: number,
     projectId?: number, // Proje ID'si opsiyonel
@@ -27,8 +29,14 @@ export class ReportsService {
       throw new Error('Geçersiz action türü');
     }
 
+    const roleEnum = Role[role as unknown as keyof typeof Role]; // Role enum'a dönüştürme
+    if (roleEnum === undefined) {
+      throw new Error('Geçersiz role türü');
+    }
+
     const log = this.activityLogRepository.create({
       userId,
+      role: roleEnum,
       action: actionEnum, // Enum'a dönüştürdük
       taskId,
       projectId,
