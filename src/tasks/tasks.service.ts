@@ -63,7 +63,7 @@ export class TaskService {
     const task = this.taskRepository.create({
       title,
       description,
-      status: status ?? TaskStatus.OPEN, //status gelmezse enumdan OPEN'ı seç
+      status: status ?? TaskStatus.NOT_STARTED, //status gelmezse enumdan OPEN'ı seç
       priority: priority ?? TaskPriority.MEDIUM, //status gelmezse enumdan MEDIUM'u seç
       dueDate: new Date(dueDate), //tarihi tarih objesi olarka kaydetti
       createdBy: createdByUser,

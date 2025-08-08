@@ -23,7 +23,7 @@ export class Task {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.OPEN })
+  @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.NOT_STARTED })
   status: TaskStatus;
 
   @Column({ type: 'enum', enum: TaskPriority, default: TaskPriority.MEDIUM })
@@ -69,4 +69,8 @@ export class Task {
 
   @Column({ nullable: true })
   projectId: number; // Proje ID'si
+
+  // Tamamlanma tarihi
+  @Column({ type: 'timestamp', nullable: true })
+  completedAt: Date; // Bu alan görev tamamlandığında otomatik olarak doldurulacak
 }
