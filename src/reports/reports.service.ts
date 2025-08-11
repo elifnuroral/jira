@@ -69,7 +69,7 @@ export class ReportsService {
   ): Promise<BurndownChartData[]> {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const dateRange = this.getDateRange(start, end); // Date aralığını alıyoruz
+    const dateRange = this.getDateRange(start, end); // Date aralığını alıyoruz.
 
     const result: BurndownChartData[] = [];
 
