@@ -1,6 +1,12 @@
 import { Exclude } from 'class-transformer';
 import { Task } from 'src/tasks/task.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Role } from '../enums/role.enum';
 
 @Entity()
@@ -36,4 +42,7 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

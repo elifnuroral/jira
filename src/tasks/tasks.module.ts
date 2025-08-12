@@ -8,6 +8,7 @@ import { ReportsModule } from 'src/reports/reports.module';
 import { ProjectsModule } from 'src/projects/projects.module'; // Circular dependency için forwardRef kullanılıyor
 import { UserService } from 'src/user/user.service';
 import { Project } from 'src/projects/entities/project.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Project } from 'src/projects/entities/project.entity';
     forwardRef(() => ProjectsModule), // Circular dependency çözümü için
     UserModule,
     ReportsModule,
+    AuthModule,
   ],
   controllers: [TasksController],
   providers: [TaskService, UserService, ReportsModule],

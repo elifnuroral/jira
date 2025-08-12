@@ -4,7 +4,7 @@ import { IsString } from 'class-validator';
 export class LoginDto {
   @ApiProperty({
     description: 'The name of the user for login.',
-    example: 'john.doe',
+    example: 'Merve Ekşi',
     required: true,
   })
   @IsString()
@@ -12,7 +12,7 @@ export class LoginDto {
 
   @ApiProperty({
     description: 'The user’s password.',
-    example: 'password123',
+    example: 'merve1234',
     required: true,
   })
   @IsString()

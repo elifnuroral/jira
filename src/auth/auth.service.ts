@@ -50,7 +50,7 @@ export class AuthService {
       throw new UnauthorizedException('Geçersiz kimlik bilgileri');
     }
 
-    const payload = { sub: user.id, name: user.name };
+    const payload = { sub: user.id, name: user.name, role: user.role };
     const accessToken = this.jwtService.sign(payload);
 
     return { accessToken };
