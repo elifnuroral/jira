@@ -64,7 +64,7 @@ export class UserService {
   }
 
   async removeUser(id: number): Promise<void> {
-    const deleteResult = await this.userRepository.delete(id);
+    const deleteResult = await this.userRepository.softDelete(id);
     if (deleteResult.affected === 0) {
       //resuslt.affected 0 veya 1 olabilir. çünkü id benzersizdir
       //result.affected delete ya da update işlemi sonucunda kaç tane kayıt etkilendiğini gösterir. yani kaç row silindiğini ya da güncellendiğini belirtir.

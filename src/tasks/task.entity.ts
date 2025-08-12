@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { TaskStatus } from './enums/task-status.enum';
 import { TaskPriority } from './enums/task-priority.enum';
@@ -73,4 +74,8 @@ export class Task {
   // Tamamlanma tarihi
   @Column({ type: 'timestamp', nullable: true })
   completedAt: Date; // Bu alan görev tamamlandığında otomatik olarak doldurulacak
+
+  // Soft delete için eklenmesi gereken alan
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

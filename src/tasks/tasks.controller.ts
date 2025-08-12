@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   ParseIntPipe,
+  UseGuards,
   //UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './tasks.service';
@@ -21,14 +22,20 @@ import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { ActivityLog } from 'src/reports/entities/activitiy-log.entity';
 import { ReportsService } from 'src/reports/reports.service';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/user/enums/role.enum';
+import { AuthGuard } from '@nestjs/passport';
 
-//@UseGuards(AuthGuard('jwt')) //JWT koruması ekle
+@ApiBearerAuth('access-token')
+@UseGuards(AuthGuard('jwt')) //JWT koruması ekle
 @Controller('task')
 export class TasksController {
   constructor(
@@ -139,6 +146,8 @@ export class TasksController {
     enum: ['ASC', 'DESC'], // Enum değerleri
     example: 'ASC',
   })
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN, Role.PROJECT_MANAGER, Role.TEAM_LEADER)
   async getTasks(@Query() filterDto: GetTasksFilterDto) {
     const page = filterDto.page ?? 1; //page ve limit değerleri için hep bir varsayılan değer kullan
     const limit = filterDto.limit ?? 10;
@@ -174,6 +183,8 @@ export class TasksController {
     type: Number, // Parametre tipi
     example: 1, // Örnek değer
   })
+  @UseGuards(RolesGuard) // <-- Bu metoda özel Guard'ları ekliyoruz
+  @Roles(Role.ADMIN) // <-- Sadece 'ADMIN' rolüne sahip kullanıcıların erişimini sağlıyoruz
   async remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {

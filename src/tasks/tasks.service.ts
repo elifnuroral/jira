@@ -121,7 +121,7 @@ export class TaskService {
     );
 
     // 2. Task'ı sil
-    await this.taskRepository.delete(id);
+    await this.taskRepository.softDelete(id);
   }
 
   /**
