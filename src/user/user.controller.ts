@@ -15,6 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUsersFilterDto } from './dto/get-users-filtere.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -23,6 +24,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/response/user-response.dto';
+import { minutes, Throttle } from '@nestjs/throttler';
 
 @Controller('user')
 export class UserController {
@@ -39,10 +41,12 @@ export class UserController {
     status: 400,
     description: 'Invalid request body or validation error.',
   })
+  @Throttle({ default: { limit: 10, ttl: minutes(1) } }) //1 dakikada en fazla 10 yazma denemesi
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
+  @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiOperation({ summary: 'Retrieves a paginated list of all users.' })
@@ -51,6 +55,7 @@ export class UserController {
     status: 200,
     description: 'A paginated list of users.',
   })
+  @Throttle({ default: { limit: 120, ttl: minutes(1) } })
   async getUser(@Query() filterDto: GetUsersFilterDto) {
     const page = filterDto.page ?? 1;
     const limit = filterDto.limit ?? 5;
@@ -58,6 +63,8 @@ export class UserController {
     return this.userService.findAllUser(page, limit);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   @ApiOperation({ summary: 'Retrieves a single user by ID.' })
   @ApiParam({
@@ -74,10 +81,13 @@ export class UserController {
     status: 404,
     description: 'User not found.',
   })
+  @Throttle({ default: { limit: 180, ttl: minutes(1) } })
   findOne(@Param('id') id: string) {
     return this.userService.findOneUser(+id);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   @ApiOperation({ summary: 'Deletes a user by ID.' })
   @ApiParam({
@@ -94,10 +104,13 @@ export class UserController {
     status: 404,
     description: 'User not found.',
   })
+  @Throttle({ default: { limit: 30, ttl: minutes(1) } })
   remove(@Param('id') id: string) {
     return this.userService.removeUser(+id);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   @ApiOperation({ summary: 'Updates a user by ID.' })
   @ApiParam({
@@ -112,6 +125,7 @@ export class UserController {
     status: 404,
     description: 'User not found.',
   })
+  @Throttle({ default: { limit: 30, ttl: minutes(1) } })
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
   }

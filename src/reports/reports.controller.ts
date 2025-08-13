@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateLogDto } from './dto/create-log.dto'; // DTO'yu import ediyoruz
 import { ActivityLog } from './entities/activitiy-log.entity';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -11,7 +20,11 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { BurndownChartResponseDto } from './dto/reponse/burndown-chart-data.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { minutes, Throttle } from '@nestjs/throttler';
 
+@ApiBearerAuth('access-token')
+@UseGuards(AuthGuard('jwt')) //JWT koruması ekle
 @Controller('reports')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
@@ -29,6 +42,7 @@ export class ReportsController {
     status: 400,
     description: 'Bad Request. Invalid data provided.',
   })
+  @Throttle({ default: { limit: 30, ttl: minutes(1) } })
   async createActivityLog(
     @Body() createLogDto: CreateLogDto, // DTO'yu alıyoruz
   ): Promise<ActivityLog> {
@@ -49,6 +63,7 @@ export class ReportsController {
     description: 'A list of all activity logs.',
     type: [ActivityLog],
   })
+  @Throttle({ default: { limit: 120, ttl: minutes(1) } })
   async getActivityLogs(): Promise<ActivityLog[]> {
     return this.reportsService.getActivityLogs();
   }
@@ -83,6 +98,7 @@ export class ReportsController {
     description:
       'Project not found or no tasks within the specified date range.',
   })
+  @Throttle({ default: { limit: 30, ttl: minutes(1) } })
   async getBurndownChart(
     @Param('projectId') projectId: number,
     @Query('startDate') startDate: string,
