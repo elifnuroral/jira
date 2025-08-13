@@ -5,7 +5,8 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt'; // bcrypt'i içeri aktar
-import { instanceToPlain } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { UserResponseDto } from './dto/response/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -56,11 +57,12 @@ export class UserService {
     return { data, total }; //findAndCount mehodu sayesinde data yı ve toplam kullanıcı sayısını tekbir sorguda döndürür.
   }
 
-  async findOneUser(id: number): Promise<any> {
+  async findOneUser(id: number): Promise<UserResponseDto | null> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) return null;
-
-    return instanceToPlain(user);
+    return plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async removeUser(id: number): Promise<void> {
@@ -73,17 +75,27 @@ export class UserService {
     }
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<any> {
+  async updateUser(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    Object.assign(user, updateUserDto); // updateUserDto'daki alanları user objesine kopyala
+    Object.assign(user, updateUserDto);
 
-    const updateUser = await this.userRepository.save(user); // Güncellenmiş kullanıcıyı kaydet ve döndür
-    return instanceToPlain(updateUser) as Partial<User>;
+    const updatedUser = await this.userRepository.save(user);
+
+    // Sadece UserResponseDto'da @Expose edilen alanlar döner
+    return plainToInstance(UserResponseDto, updatedUser, {
+      excludeExtraneousValues: true, // Expose’suz alanları at demek
+      //@Expose: “Bu alan çıktıda gözüksün ve/veya şu isimle map’lensin.
+      //excludeExtraneousValues: true: “Expose edilmemiş hiçbir alanı dahil etme.”
+      //Birlikte kullanınca: güvenli, kontrollü, sözleşmeye uygun response üretirsin.
+    });
   }
 
   //tokene göre kullanıcıyı bulur

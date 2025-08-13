@@ -16,11 +16,13 @@ import { GetUsersFilterDto } from './dto/get-users-filtere.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBody,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
+import { UserResponseDto } from './dto/response/user-response.dto';
 
 @Controller('user')
 export class UserController {
@@ -105,10 +107,7 @@ export class UserController {
     example: 1,
   })
   @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({
-    status: 200,
-    description: 'User successfully updated.',
-  })
+  @ApiOkResponse({ type: UserResponseDto })
   @ApiResponse({
     status: 404,
     description: 'User not found.',
