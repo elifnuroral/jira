@@ -5,12 +5,14 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { minutes, Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: minutes(15) } }) //15 dakika içinde en fazla 5 istek. 6. istek gelirse 429 Too Many Requests döner.
   @ApiOperation({ summary: 'Handles user login.' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
@@ -26,6 +28,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @Throttle({ default: { limit: 5, ttl: minutes(10) } }) //10 dakika içinde en fazla 5 register isteği gönderilebilir.
   @ApiOperation({ summary: 'Registers a new user.' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
@@ -43,6 +46,7 @@ export class AuthController {
 
   //Şifre sıfırlama bağlantısı isteyen kullanıcıyı işler
   @Post('request-password-reset')
+  @Throttle({ default: { limit: 3, ttl: minutes(30) } })
   @ApiOperation({ summary: 'Requests a password reset link for the user.' })
   @ApiBody({ type: ForgetPasswordDto })
   @ApiResponse({
@@ -59,6 +63,7 @@ export class AuthController {
 
   // Kullanıcının şifresini sıfırlamasını sağlar
   @Post('reset-password')
+  @Throttle({ default: { limit: 5, ttl: minutes(15) } })
   @ApiOperation({ summary: 'Resets the user’s password using a token.' })
   @ApiBody({ type: ResetPasswordDto })
   @ApiResponse({

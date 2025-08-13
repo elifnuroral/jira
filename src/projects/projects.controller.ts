@@ -1,9 +1,19 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service';
 import { Project } from './entities/project.entity';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { minutes, Throttle } from '@nestjs/throttler';
 
+@ApiBearerAuth('access-token')
+@UseGuards(AuthGuard('jwt')) //JWT koruması ekle
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
@@ -21,6 +31,7 @@ export class ProjectsController {
     status: 400,
     description: 'Bad Request. The request body is invalid.',
   })
+  @Throttle({ default: { limit: 20, ttl: minutes(1) } }) //1 dakikada aynı IP'den en fazla 20 oluşturma denemesi
   async createProject(
     @Body() createProjectDto: CreateProjectDto,
   ): Promise<Project> {
@@ -35,6 +46,7 @@ export class ProjectsController {
     description: 'A list of all projects.',
     type: [Project],
   })
+  @Throttle({ default: { limit: 120, ttl: minutes(1) } }) //1 dakikada 120 istek
   async getAllProjects(): Promise<Project[]> {
     return await this.projectsService.getAllProjects();
   }
@@ -57,6 +69,7 @@ export class ProjectsController {
     status: 404,
     description: 'Project not found.',
   })
+  @Throttle({ default: { limit: 180, ttl: minutes(1) } }) //1 dakikada 180 tekil proje sorgusu
   async getProjectById(@Param('id') id: number): Promise<Project | null> {
     return await this.projectsService.getProjectById(id);
   }

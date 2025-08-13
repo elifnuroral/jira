@@ -11,6 +11,8 @@ import { ReportsModule } from './reports/reports.module';
 import { ActivityLog } from './reports/entities/activitiy-log.entity';
 import { ProjectsModule } from './projects/projects.module';
 import { Project } from './projects/entities/project.entity';
+import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -26,6 +28,15 @@ import { Project } from './projects/entities/project.entity';
       entities: [Task, User, ActivityLog, Project], //projemde kullandığım tüm entityleri buraya giriyorum
       synchronize: true, // development aşamasında true olabilir
     }),
+    ThrottlerModule.forRoot([
+      {
+        // 60 saniyelik pencere, 100 istek (ttl ms cinsinden!)
+        //Bu yapılandırma, tüm endpoint'leriniz için varsayılan bir güvenlik katmanı oluşturur.
+        // bu global kuralı daha sonra belirli bir endpoint için @Throttle() dekoratörü ile değiştirebilirsiniz.
+        ttl: seconds(60), // = 60000
+        limit: 100,
+      },
+    ]),
     TasksModule,
     UserModule,
     AuthModule,
@@ -33,6 +44,6 @@ import { Project } from './projects/entities/project.entity';
     ProjectsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

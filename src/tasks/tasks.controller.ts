@@ -24,6 +24,7 @@ import { ReportsService } from 'src/reports/reports.service';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -33,6 +34,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/user/enums/role.enum';
 import { AuthGuard } from '@nestjs/passport';
+import { minutes, Throttle } from '@nestjs/throttler';
 
 @ApiBearerAuth('access-token')
 @UseGuards(AuthGuard('jwt')) //JWT koruması ekle
@@ -49,6 +51,7 @@ export class TasksController {
     description:
       'Create a task with title, description, status, priority, dueDate, etc.', // Detaylı açıklama
   })
+  @Throttle({ default: { limit: 20, ttl: minutes(1) } })
   createTask(@Body() CreateTaskDto: CreateTaskDto): Promise<Task> {
     return this.taskService.createTask(CreateTaskDto);
   }
@@ -71,6 +74,7 @@ export class TasksController {
     status: 404,
     description: 'User not found or no tasks were created by this user.',
   })
+  @Throttle({ default: { limit: 100, ttl: minutes(1) } })
   async getTasksByUserName(@Query() filterDto: GetTasksByUserNameDto) {
     const { name } = filterDto;
     return await this.taskService.findTasksByUserName(name);
@@ -93,6 +97,7 @@ export class TasksController {
     status: 404,
     description: 'User not found or no tasks were assigned to this user.',
   })
+  @Throttle({ default: { limit: 100, ttl: minutes(1) } })
   async getTasksByAssignedUserName(@Query() filterDto: GetTasksByUserNameDto) {
     const { name } = filterDto;
     return await this.taskService.findTasksByAssignedUserName(name);
@@ -148,6 +153,7 @@ export class TasksController {
   })
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.PROJECT_MANAGER, Role.TEAM_LEADER)
+  @Throttle({ default: { limit: 120, ttl: minutes(1) } })
   async getTasks(@Query() filterDto: GetTasksFilterDto) {
     const page = filterDto.page ?? 1; //page ve limit değerleri için hep bir varsayılan değer kullan
     const limit = filterDto.limit ?? 10;
@@ -167,6 +173,7 @@ export class TasksController {
     type: Number, // Parametre tipi
     example: 1, // Örnek değer
   })
+  @Throttle({ default: { limit: 180, ttl: minutes(1) } })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Task | null> {
     return await this.taskService.findOne(id);
   }
@@ -185,6 +192,7 @@ export class TasksController {
   })
   @UseGuards(RolesGuard) // <-- Bu metoda özel Guard'ları ekliyoruz
   @Roles(Role.ADMIN) // <-- Sadece 'ADMIN' rolüne sahip kullanıcıların erişimini sağlıyoruz
+  @Throttle({ default: { limit: 30, ttl: minutes(1) } })
   async remove(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
@@ -208,6 +216,7 @@ export class TasksController {
     description: 'Task update request body', // Body açıklaması
     type: UpdateTaskDto, // DTO tipi
   })
+  @Throttle({ default: { limit: 30, ttl: minutes(1) } })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -231,6 +240,7 @@ export class TasksController {
     description: 'Task status update request', // Body açıklaması
     type: UpdateTaskStatusDto, // DTO türü
   })
+  @Throttle({ default: { limit: 60, ttl: minutes(1) } })
   async updateTaskStatus(
     @Param('id') id: number,
     @Body() dto: UpdateTaskStatusDto,
@@ -239,7 +249,31 @@ export class TasksController {
   }
 
   //belirli bir task'in geçmişindeki activity loglarını getiren rota
+  @ApiOperation({
+    summary: 'Retrieves activity logs for a task',
+    description:
+      'Returns all activity logs related to the task with the given ID.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'The ID of the task',
+    example: 1,
+  })
+  @ApiOkResponse({
+    description: 'Activity logs retrieved successfully.',
+    type: [ActivityLog],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Task not found or no activity logs.',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'Too Many Requests — rate limit exceeded.',
+  })
   @Get(':id/activity-log')
+  @Throttle({ default: { limit: 60, ttl: minutes(1) } })
   async getTaskActivityLog(@Param('id') id: number): Promise<ActivityLog[]> {
     // Activity Log'ları, ReportsService üzerinden alıyoruz
     return await this.reportsService.getActivityLogsByTaskId(id);
