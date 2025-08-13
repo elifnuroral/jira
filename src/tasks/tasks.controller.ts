@@ -22,7 +22,6 @@ import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { ActivityLog } from 'src/reports/entities/activitiy-log.entity';
 import { ReportsService } from 'src/reports/reports.service';
 import {
-
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
@@ -34,7 +33,6 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/user/enums/role.enum';
 import { AuthGuard } from '@nestjs/passport';
-
 
 @ApiBearerAuth('access-token')
 @UseGuards(AuthGuard('jwt')) //JWT koruması ekle
