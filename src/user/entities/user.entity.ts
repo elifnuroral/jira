@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from '../enums/role.enum';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Entity()
 export class User {
@@ -45,4 +46,7 @@ export class User {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
+
+  @OneToMany(() => Comment, (c) => c.author)
+  comments: Comment[];
 }

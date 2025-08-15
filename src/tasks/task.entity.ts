@@ -7,11 +7,13 @@ import {
   ManyToOne,
   JoinColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { TaskStatus } from './enums/task-status.enum';
 import { TaskPriority } from './enums/task-priority.enum';
 import { User } from 'src/user/entities/user.entity';
 import { Project } from 'src/projects/entities/project.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Entity()
 export class Task {
@@ -78,4 +80,7 @@ export class Task {
   // Soft delete için eklenmesi gereken alan
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
+
+  @OneToMany(() => Comment, (c) => c.task)
+  comments: Comment[];
 }

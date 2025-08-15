@@ -7,7 +7,6 @@ import { Role } from 'src/user/enums/role.enum';
 import { Task } from 'src/tasks/task.entity';
 import { TaskStatus } from 'src/tasks/enums/task-status.enum';
 import { BurndownChartData } from './interfaces/burndown-chart.interface';
-import { ProjectsService } from 'src/projects/projects.service';
 
 @Injectable()
 export class ReportsService {
@@ -16,7 +15,6 @@ export class ReportsService {
     private activityLogRepository: Repository<ActivityLog>,
     @InjectRepository(Task)
     private taskRepository: Repository<Task>, // Task entity'sini de inject ediyoruz
-    private projectService: ProjectsService,
   ) {}
 
   // Yeni bir activity log kaydı oluşturur

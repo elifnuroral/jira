@@ -15,4 +15,5 @@ export enum TaskAction {
   DELETED = 'DELETED', // "Task Deleted"
   STATUS_CHANGED = 'STATUS_CHANGED', // "Task STATUS CAHNEGED
   IN_PROGRESS = 'IN_PROGRESS', //Eğer taskin statusü IN_PROGRESS ise action IN_PROGRESS OLARAK KAYDEDİLECEK.
+  COMMENT_DELETED = 'COMMENT_DELETED', //taske ait bir torum silindiğinde
 }
