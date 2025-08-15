@@ -13,6 +13,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { Project } from './projects/entities/project.entity';
 import { seconds, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { APP_GUARD } from '@nestjs/core';
       database: 'postgres', // veritabanı adını gir
       entities: [Task, User, ActivityLog, Project], //projemde kullandığım tüm entityleri buraya giriyorum
       synchronize: true, // development aşamasında true olabilir
+      autoLoadEntities: true, //“forFeature ile bildirilen tüm entity’leri, connection’a otomatik ekle.”
     }),
     ThrottlerModule.forRoot([
       {
@@ -42,6 +44,7 @@ import { APP_GUARD } from '@nestjs/core';
     AuthModule,
     ReportsModule,
     ProjectsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
