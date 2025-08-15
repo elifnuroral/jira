@@ -20,13 +20,14 @@ import {
 } from '@nestjs/swagger';
 
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
-import { PaginateQueryDto } from './dto/paginate-query.dto';
 import { Role } from 'src/user/enums/role.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { CreateCommentDto } from './dto/request/create-comment.dto';
+import { PaginateQueryDto } from './dto/request/paginate-query.dto';
+import { UpdateCommentDto } from './dto/request/update-comment.dto';
+import { DeleteResponseDto } from './dto/request/response/delete-response.dto';
 
 type AuthUser = { id: number; role: Role };
 
@@ -101,6 +102,7 @@ export class CommentsController {
   ) {
     // remove imzan: (id: number, actorId: number, actorRole: Role)
     const actorRole = Role.USER; // user.role
-    return this.commentsService.remove(id, user.id, actorRole);
+    const res = await this.commentsService.remove(id, user.id, actorRole);
+    return Object.assign(new DeleteResponseDto(), res);
   }
 }
